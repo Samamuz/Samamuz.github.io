@@ -1,195 +1,455 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Modèle CSS</title>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" href="AF.css">
-	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-	<style>
-		body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", sans-serif}
-		body, html { height: 100%; line-height: 1.8; }
-		/* Image d’en-tête pleine hauteur */
-		.bgimg-1 {
-			background-position: center;
-			background-size: cover;
-			background-image: url("images/background.jpg");
-			min-height: 100%;
-		}
-		.af-bar .af-button { padding: 16px; }
-	</style>
+    <title>Modèle CSS</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="AF.css">
+    <!-- Remplacer Raleway par Open Sans -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        /* Utiliser Open Sans partout */
+        body,h1,h2,h3,h4,h5,h6 {font-family: "Open Sans", sans-serif}
+        body, html { height: 100%; line-height: 1.8; }
+        .bgimg-1 {
+            background-position: center;
+            background-size: cover;
+            background-image: url("images/background.jpg");
+            min-height: 100%;
+        }
+        .af-bar .af-button { padding: 16px; }
+        /* Slideshow bandes latérales */
+        .slideshow-container {
+            position: relative;
+            margin: auto;
+            max-width: 900px;
+            min-height: 300px; /* pour éviter le collapse */
+        }
+        .slide-nav-left, .slide-nav-right {
+            position: absolute;
+            top: 0;
+            width: 18%;
+            height: 100%;
+            cursor: pointer;
+            z-index: 10; /* <- valeur réduite pour passer derrière le menu */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.08);
+            transition: background 0.0s;
+            user-select: none;
+        }
+        .slide-nav-left:hover, .slide-nav-right:hover {
+            background: rgba(0,0,0,0.18);
+        }
+        .slide-nav-left {
+            left: 0;
+            border-radius: 8px 0 0 8px;
+        }
+        .slide-nav-right {
+            right: 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .slide-arrow {
+            font-size: 2.5em;
+            color: #fff;
+            text-shadow: 0 2px 8px #000;
+            pointer-events: none;
+        }
+        @media (max-width: 600px) {
+            .slide-nav-left, .slide-nav-right { width: 28%; }
+            .slide-arrow { font-size: 2em; }
+        }
+        /* Centrage de la légende du slideshow */
+        .slideshow-container .text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #fff;
+            background: rgba(0,0,0,0.45);
+            padding: 12px 32px;
+            border-radius: 8px;
+            font-size: 1.3em;
+            text-align: center;
+            min-width: 120px;
+            max-width: 80%;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+            /* Ajout pour rendre le lien cliquable sur toute la zone */
+            cursor: pointer;
+        }
+        .slideshow-container .text a {
+            color: inherit;
+            text-decoration: none;
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        .slideshow-container .text a:hover {
+            text-decoration: underline;
+        }
+        .af-top, .af-bar {
+            position: relative;
+            z-index: 1000;
+        }
+        /* Ajout effet fondu pour le slideshow */
+        .mySlides {
+            opacity: 0;
+            transition: opacity 0.7s;
+            pointer-events: none;
+            position: absolute;
+            width: 100%;
+            top: 0;
+            left: 0;
+        }
+        .mySlides.active {
+            opacity: 1;
+            pointer-events: auto;
+            position: relative;
+        }
+    </style>
 </head>
 <body>
-	<!-- Barre de navigation -->
-	<div class="af-top">
-		<div class="af-bar af-white af-card" id="myNavbar">
-			<a href="#home" class="af-bar-item af-button af-wide">site-simple.ch</a>
-			<!-- Liens de navigation -->
-			<div class="af-right af-hide-small">
-				<a href="#pricing" class="af-bar-item af-button"><i class="fa fa-usd"></i> SERVICES</a>
-				<a href="#work" class="af-bar-item af-button"><i class="fa fa-th"></i> PORTFOLIO</a>
-				<a href="#team" class="af-bar-item af-button"><i class="fa fa-user"></i> ÉQUIPE</a>
-				<a href="#contact" class="af-bar-item af-button"><i class="fa fa-envelope"></i> CONTACT</a>
-			</div>
-			<!-- Menu mobile -->
-			<a href="javascript:void(0)" class="af-bar-item af-button af-right af-hide-large af-hide-medium" onclick="w3_open()">
-				<i class="fa fa-bars"></i>
-			</a>
-		</div>
-	</div>
+    <!-- Barre de navigation -->
+    <div class="af-top">
+        <div class="af-bar af-white af-card" id="myNavbar">
+            <a href="#home" class="af-bar-item af-button af-wide">site-simple.ch</a>
+            <div class="af-right af-hide-small">
+                <a href="#pricing" class="af-bar-item af-button"><i class="fa fa-usd"></i> SERVICES</a>
+                <a href="#work" class="af-bar-item af-button"><i class="fa fa-th"></i> PORTFOLIO</a>
+                <a href="#contact" class="af-bar-item af-button"><i class="fa fa-envelope"></i> CONTACT</a>
+            </div>
+            <a href="javascript:void(0)" class="af-bar-item af-button af-right af-hide-large af-hide-medium" onclick="w3_open()">
+                <i class="fa fa-bars"></i>
+            </a>
+        </div>
+    </div>
 
-	<!-- Menu latéral pour mobile -->
-	<nav class="af-sidebar af-bar-block af-black af-card af-animate-left af-hide-medium af-hide-large" style="display:none" id="mySidebar">
-		<a href="javascript:void(0)" onclick="w3_close()" class="af-bar-item af-button af-large af-padding-16">Fermer ×</a>
-		<a href="#pricing" onclick="w3_close()" class="af-bar-item af-button">PRIX</a>
-		<a href="#work" onclick="w3_close()" class="af-bar-item af-button">TRAVAUX</a>
-		<a href="#about" onclick="w3_close()" class="af-bar-item af-button">À PROPOS</a>
-		<a href="#team" onclick="w3_close()" class="af-bar-item af-button">ÉQUIPE</a>
-		<a href="#contact" onclick="w3_close()" class="af-bar-item af-button">CONTACT</a>
-	</nav>
+    <!-- Menu latéral pour mobile -->
+    <nav class="af-sidebar af-bar-block af-black af-card af-animate-left af-hide-medium af-hide-large" style="display:none" id="mySidebar">
+        <a href="javascript:void(0)" onclick="w3_close()" class="af-bar-item af-button af-large af-padding-16">Fermer ×</a>
+        <a href="#pricing" onclick="w3_close()" class="af-bar-item af-button">PRIX</a>
+        <a href="#work" onclick="w3_close()" class="af-bar-item af-button">PORTFOLIO</a>
+        <a href="#team" onclick="w3_close()" class="af-bar-item af-button">ÉQUIPE</a>
+        <a href="#contact" onclick="w3_close()" class="af-bar-item af-button">CONTACT</a>
+    </nav>
 
-	<!-- En-tête -->
-	<header class="bgimg-1 af-display-container af-grayscale-min" id="home">
-		<div class="af-display-left af-text-white" style="padding:48px">
-			<span class="af-jumbo af-hide-small">Tout simplement.</span><br>
-			<span class="af-xxlarge af-hide-large af-hide-medium">Commencez quelque chose qui compte</span><br>
-			<span class="af-large">Fiable et efficace. Votre marketing digital à prix défiant toute concurrence.</span>
-			<p><a href="#pricing" class="af-button af-white af-padding-large af-large af-margin-top af-opacity af-hover-opacity-off">Découvrir notre offre</a></p>
-		</div>
-		<div class="af-display-bottomleft af-text-grey af-large" style="padding: 30px 48px">
-			<i class="fa fa-facebook-official af-hover-opacity"></i>
-			<i class="fa fa-instagram af-hover-opacity"></i>
-			<i class="fa fa-snapchat af-hover-opacity"></i>
-			<i class="fa fa-pinterest-p af-hover-opacity"></i>
-			<i class="fa fa-twitter af-hover-opacity"></i>
-			<i class="fa fa-linkedin af-hover-opacity"></i>
-		</div>
-	</header>
+    <!-- En-tête -->
+    <header class="bgimg-1 af-display-container af-grayscale-min" id="home">
+        <div class="af-display-left af-text-white" style="padding:48px">
+            <span class="af-jumbo af-hide-small">Tout simplement.</span><br>
+            <span class="af-xxlarge af-hide-large af-hide-medium">Commencez quelque chose qui compte</span><br>
+            <span class="af-large">Fiable et efficace. Votre marketing digital à prix défiant toute concurrence.</span>
+            <p><a href="#pricing" class="af-button af-white af-padding-large af-large af-margin-top af-opacity af-hover-opacity-off">Découvrir notre offre</a></p>
+        </div>
+        <div class="af-display-bottomright af-text-grey af-large" style="padding: 30px 48px">
+            <i class="fa fa-facebook-official af-hover-opacity"></i>
+            <i class="fa fa-instagram af-hover-opacity"></i>
+            <i class="fa fa-snapchat af-hover-opacity"></i>
+            <i class="fa fa-pinterest-p af-hover-opacity"></i>
+            <i class="fa fa-twitter af-hover-opacity"></i>
+            <i class="fa fa-linkedin af-hover-opacity"></i>
+        </div>
+    </header>
 
+    <!-- 1) NOS SERVICES -->
+    <div class="af-container af-light-grey" style="padding:100px 16px" id="pricing">
+        <h3 class="af-center">NOS SERVICES</h3>
+        <p class="af-center af-large" style="margin-bottom:30px;">Choisissez l’offre clef-en-main qui vous convient le mieux :</p>
+        <div class="af-row-padding" style="margin-top:20px">
+            <!-- Carte Basique -->
+            <div class="af-col l4 m6 af-margin-bottom">
+                <ul class="af-ul af-white af-center af-card af-hover-shadow">
+                    <li class="af-black af-xlarge af-padding-32">Basique</li>
+                    <li class="af-padding-16">Site web <b>1 page</b></li>
+                    <li class="af-padding-16">Design complet du site</li>
+                    <li class="af-padding-16">Maintenance en ligne</li>
+                    <li class="af-padding-16">
+                        <h2>CHF 149</h2>
+                        <span class="af-opacity">Paiement annuel</span>
+                    </li>
+                    <li class="af-light-grey af-padding-24">
+                        <button type="button" class="af-button af-black af-padding-large af-wide" onclick="choosePlan('Basique')">Choisir</button>
+                    </li>
+                </ul>
+            </div>
+            <!-- Carte Pro -->
+            <div class="af-col l4 m6 af-margin-bottom">
+                <ul class="af-ul af-white af-center af-card af-hover-shadow">
+                    <li class="af-blue af-xlarge af-padding-32">Pro</li>
+                    <li class="af-padding-16">Site web <b>5 pages</b></li>
+                    <li class="af-padding-16">Design et SEO de base</li>
+                    <li class="af-padding-16">Support prioritaire</li>
+                    <li class="af-padding-16">
+                        <h2>CHF 299</h2>
+                        <span class="af-opacity">Paiement annuel</span>
+                    </li>
+                    <li class="af-light-grey af-padding-24">
+                        <button type="button" class="af-button af-black af-padding-large af-wide" onclick="choosePlan('Pro')">Choisir</button>
+                    </li>
+                </ul>
+            </div>
+            <!-- Carte Entreprise -->
+            <div class="af-col l4 m12 af-margin-bottom">
+                <ul class="af-ul af-white af-center af-card af-hover-shadow">
+                    <li class="af-black af-xlarge af-padding-32">Entreprise</li>
+                    <li class="af-padding-16"><b>Fonctionnalités avancées</b></li>
+                    <li class="af-padding-16">Intégrations</li>
+                    <li class="af-padding-16">Support dédié</li>
+                    <li class="af-padding-16">
+                        <h2>Sur devis</h2>
+                        <span class="af-opacity">A définir</span>
+                    </li>
+                    <li class="af-light-grey af-padding-24">
+                        <button type="button" class="af-button af-black af-padding-large af-wide" onclick="choosePlan('Entreprise')">Nous contacter</button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
 
-	<!-- 1) NOS SERVICES -->
-	<div class="af-container" style="padding:100px 16px" id="pricing">
-		<h3 class="af-center">NOS SERVICES</h3>
-		<p class="af-center af-large">Choisissez l’offre clef-en-main qui vous convient le mieux :</p>
-		<div class="af-row-padding" style="margin-top:64px">
-			<!-- Carte Basique -->
-			<div class="af-col l4 m6 af-margin-bottom">
-				<ul class="af-ul af-white af-center af-card af-hover-shadow">
-					<li class="af-black af-xlarge af-padding-32">Basique</li>
-					<li class="af-padding-16">Site web <b>1 page</b></li>
-					<li class="af-padding-16">Design complet du site</li>
-					<li class="af-padding-16">Maintenance comprise</li>
-					<li class="af-padding-16">
-						<h2>CHF 149</h2>
-						<span class="af-opacity">paiement annuel</span>
-					</li>
-					<li class="af-light-grey af-padding-24">
-						<button class="af-button af-black af-padding-large af-wide">Choisir</button>
-					</li>
-				</ul>
-			</div>
-			<!-- Carte Pro -->
-			<div class="af-col l4 m6 af-margin-bottom">
-				<ul class="af-ul af-white af-center af-card af-hover-shadow">
-					<li class="af-blue af-xlarge af-padding-32">Pro</li>
-					<li class="af-padding-16">Site web <b>5 pages</b></li>
-					<li class="af-padding-16">SEO de base</li>
-					<li class="af-padding-16">Support prioritaire</li>
-					<li class="af-padding-16">
-						<h2>CHF 299</h2>
-						<span class="af-opacity">paiement annuel</span>
-					</li>
-					<li class="af-light-grey af-padding-24">
-						<button class="af-button af-black af-padding-large af-wide">Choisir</button>
-					</li>
-				</ul>
-			</div>
-			<!-- Carte Entreprise -->
-			<div class="af-col l4 m12 af-margin-bottom">
-				<ul class="af-ul af-white af-center af-card af-hover-shadow">
-					<li class="af-black af-xlarge af-padding-32">Entreprise</li>
-					<li class="af-padding-16"><b>Fonctionnalités avancées</b></li>
-					<li class="af-padding-16">Intégrations</li>
-					<li class="af-padding-16">Support dédié</li>
-					<li class="af-padding-16">
-						<h2>Sur devis</h2>
-						<span class="af-opacity">contactez-nous</span>
-					</li>
-					<li class="af-light-grey af-padding-24">
-						<a href="#contact" class="af-button af-black af-padding-large af-wide">Nous contacter</a>
-					</li>
-				</ul>
-			</div>
-		</div>
-	</div>
+    
+    <!-- 2) TRAVAUX -->
+    <div class="af-container" style="padding:100px 16px" id="work">
+        <h3 class="af-center">NOS TRAVAUX</h3>
+        <p class="af-center af-large" style="margin-bottom:30px;">Quelques exemples types de ce que nous accomplissons pour nos clients :</p>
+        <div style="margin-top:20px">
+            <!-- Slideshow NOS TRAVAUX -->
+            <div class="slideshow-container">
+                <div class="slide-nav-left" onclick="plusSlides(-1)">
+                    <span class="slide-arrow">&#10094;</span>
+                </div>
+                <div class="slide-nav-right" onclick="plusSlides(1)">
+                    <span class="slide-arrow">&#10095;</span>
+                </div>
+<div class="mySlides fade">
+    <img src="images/slide1.jpg" style="width:100%">
+    <div class="text">
+        <a href="projet1.html" target="_blank">Essayer le site</a>
+    </div>
+    </div>
+    <div class="mySlides fade">
+        <img src="images/slide2.jpg" style="width:100%">
+        <div class="text">
+            <a href="projet2.html" target="_blank">Essayer le site</a>
+        </div>
+    </div>
 
-	<!-- 2) TRAVAUX -->
-	<div class="af-container" style="padding:100px 16px" id="work">
-		<h3 class="af-center">NOS TRAVAUX</h3>
-		<p class="af-center af-large">Quelques exemples de ce que nous accomplissons pour nos clients :</p>
-	</div>
+    </div>
+            </div>
+            <!-- Points indicateurs -->
+            <br>
+            <div style="text-align:center">
+                <span class="dot" onclick="currentSlide(1)"></span>
+                <span class="dot" onclick="currentSlide(2)"></span>
+                <span class="dot" onclick="currentSlide(3)"></span>
+            </div>
+        </div>
+    </div>
 
+    <!-- 3) CONTACT -->
+    <div class="af-container" style="padding:50px 16px" id="contact">
+        <h3 class="af-center">CONTACT</h3>
+        <p class="af-center af-large" style="margin-bottom:30px;">Pour d'avantages d'informations :</p>
+        <div style="margin-top:20px">
+            <p><i class="fa fa-map-marker fa-fw af-xxlarge af-margin-right"></i> site-simple.ch, Rue de Sébeillon 12, 1004 Lausanne</p>
+            <p><i class="fa fa-phone fa-fw af-xxlarge af-margin-right"></i> 079 718 78 65</p>
+            <p><i class="fa fa-envelope fa-fw af-xxlarge af-margin-right"></i> sitesimple@gmail.com</p>
+            <br>
+            <form action="/action_page.php" target="_blank">
+                <p><input id="contact-email" class="af-input af-border" type="email" placeholder="Email" required name="Email"></p>
+                <p><input id="contact-nom" class="af-input af-border" type="text" placeholder="Nom" required name="Nom"></p>
+                <p><input id="contact-prenom" class="af-input af-border" type="text" placeholder="Prénom" required name="Prénom"></p>
+                <p><input class="af-input af-border" type="tel" placeholder="Téléphone (facultatif)" name="Telephone"></p>
+                <p>
+                    <select id="contact-subject" class="af-input af-border" required name="Sujet">
+                        <option value="" disabled selected>Sujet</option>
+                        <option value="Demande">Demande</option>
+                        <option value="Basique">Inscription Basique</option>
+                        <option value="Pro">Inscription Pro</option>
+                        <option value="Entreprise">Inscription Entreprise</option>
+                    </select>
+                </p>                                <p><textarea id="contact-message" class="af-input af-border" placeholder="Message" required name="Message" rows="5" style="resize: vertical; width:100%;"></textarea></p>
+                <p class="af-center" style="margin-top:48px">
+                    <button class="af-button af-black" type="submit">
+                        <i class="fa fa-paper-plane"></i> ENVOYER
+                    </button>
+                </p>
+            </form>
+        </div>
+    </div>
 
+    <!-- Footer -->
+    <footer class="af-center af-black af-padding-64">
+        <a href="#home" class="af-button af-light-grey">
+            <i class="fa fa-arrow-up af-margin-right"></i>Tout en haut
+        </a>
+        <div class="af-xlarge af-section">
+            <i class="fa fa-facebook-official af-hover-opacity"></i>
+            <i class="fa fa-instagram af-hover-opacity"></i>
+            <i class="fa fa-snapchat af-hover-opacity"></i>
+            <i class="fa fa-pinterest-p af-hover-opacity"></i>
+            <i class="fa fa-twitter af-hover-opacity"></i>
+            <i class="fa fa-linkedin af-hover-opacity"></i>
+        </div>
+        <p class="af-opacity">© 2025 Site-simple.ch — Tous droits réservés</p>
+    </footer>
 
-  	<!-- 5) CONTACT -->
-<!-- Contact Section -->
-  <div class="af-container af-light-grey" style="padding:100px 16px" id="contact">
-    <h3 class="af-center">CONTACT</h3>
-    <p class="af-center af-large">Pour d'avantages d'informations :</p>
+    <!-- Script menu mobile et slideshow -->
+    <script>
+        function w3_open() {
+            const x = document.getElementById('mySidebar');
+            if (x.style.display === 'block') {
+                x.style.display = 'none';
+            } else {
+                x.style.display = 'block';
+            }
+        }
+        function w3_close() {
+            const x = document.getElementById('mySidebar');
+            x.style.display = 'none';
+        }
 
-  <div style="margin-top:48px">
-    <p><i class="fa fa-map-marker fa-fw af-xxlarge af-margin-right"></i> Lausanne, Suisse</p>
-    <p><i class="fa fa-phone fa-fw af-xxlarge af-margin-right"></i> 079 718 78 65</p>
-    <p><i class="fa fa-envelope fa-fw af-xxlarge af-margin-right"></i> sitesimple@gmail.com</p>
-    <br>
-    <form action="/action_page.php" target="_blank">
-      <p><input class="af-input af-border" type="text" placeholder="Nom" required name="Nom"></p>
-      <p><input class="af-input af-border" type="text" placeholder="Email" required name="Email"></p>
-      <p><input class="af-input af-border" type="text" placeholder="Sujet" required name="Sujet"></p>
-      <p><input class="af-input af-border" type="text" placeholder="Message" required name="Message"></p>
-      <p>
-        <button class="af-button af-black" type="submit">
-          <i class="fa fa-paper-plane"></i> ENVOYER
-        </button>
-      </p>
-    </form>
-  </div>
-</div>
+        // Choisir un plan depuis la carte : sélectionne l'option et fait défiler vers le formulaire
+        function choosePlan(planValue) {
+            try {
+                const select = document.getElementById('contact-subject');
+                if (select) {
+                    // essayer de sélectionner la valeur correspondante
+                    select.value = planValue;
+                    // si la valeur n'existe pas, tenter de sélectionner par texte
+                    if (select.value !== planValue) {
+                        for (let i = 0; i < select.options.length; i++) {
+                            if (select.options[i].text.trim().toLowerCase().includes(planValue.toLowerCase())) {
+                                select.selectedIndex = i;
+                                break;
+                            }
+                        }
+                    }
+                    // masquer le champ message si on choisit une inscription
+                    const message = document.getElementById('contact-message');
+                    if (message) {
+                        message.value = '';
+                        message.removeAttribute('required');
+                        message.style.display = 'none';
+                    }
+                    // donner le focus au select pour indiquer visuellement le choix
+                    select.focus({preventScroll:true});
+                }
+                const contactSection = document.getElementById('contact');
+                if (contactSection && contactSection.scrollIntoView) {
+                    contactSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                } else {
+                    // fallback : changer le hash
+                    window.location.hash = '#contact';
+                }
+            } catch (e) {
+                // en cas d'erreur, effectuer un fallback simple
+                window.location.hash = '#contact';
+            }
+        }
 
-<!-- Footer -->
-<footer class="af-center af-black af-padding-64">
-  <a href="#home" class="af-button af-light-grey">
-    <i class="fa fa-arrow-up af-margin-right"></i>Tout en haut
-  </a>
-  <div class="af-xlarge af-section">
-    <i class="fa fa-facebook-official af-hover-opacity"></i>
-    <i class="fa fa-instagram af-hover-opacity"></i>
-    <i class="fa fa-snapchat af-hover-opacity"></i>
-    <i class="fa fa-pinterest-p af-hover-opacity"></i>
-    <i class="fa fa-twitter af-hover-opacity"></i>
-    <i class="fa fa-linkedin af-hover-opacity"></i>
-  </div>
-  <p class="af-opacity">© 2025 Site-simple.ch — Tous droits réservés
-</p>
-</footer>
+        // Lorsque l'utilisateur change le sujet manuellement, on cache/affiche le message
+        (function attachSubjectChangeHandler(){
+            const select = document.getElementById('contact-subject');
+            const message = document.getElementById('contact-message');
+            if (!select || !message) return;
+            function updateMessageVisibility() {
+                const val = select.value || '';
+                // considérer comme inscription si la valeur ou le texte contient les mots clefs
+                const text = select.options[select.selectedIndex] ? select.options[select.selectedIndex].text : '';
+                const isInscription = /basique|pro|entreprise/i.test(val) || /inscription/i.test(text);
+                if (isInscription) {
+                    message.value = '';
+                    message.removeAttribute('required');
+                    message.style.display = 'none';
+                } else {
+                    message.style.display = '';
+                    message.setAttribute('required', '');
+                }
+            }
+            // état initial
+            updateMessageVisibility();
+            select.addEventListener('change', updateMessageVisibility);
+        })();
 
+        // Make internal anchor links use smooth scrolling (skip links that already call choosePlan)
+        (function enableAnchorSmoothScroll(){
+            document.querySelectorAll('a[href^="#"]').forEach(function(a){
+                a.addEventListener('click', function(e){
+                    const href = a.getAttribute('href');
+                    if (!href || href.length <= 1) return; // ignore '#' or empty
+                    const onclickAttr = a.getAttribute('onclick') || '';
+                    // if this anchor already triggers choosePlan, let that handler perform the scroll
+                    if (/choosePlan\s*\(/.test(onclickAttr)) return;
+                    const targetId = href.slice(1);
+                    const target = document.getElementById(targetId);
+                    if (target) {
+                        e.preventDefault();
+                        try {
+                            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        } catch (err) {
+                            // fallback
+                            window.location.hash = href;
+                        }
+                        // update the URL hash without jumping
+                        try {
+                            if (history && history.pushState) history.pushState(null, '', href);
+                        } catch (err) {}
+                        // if a mobile sidebar is open, attempt to close it (many anchors call w3_close themselves)
+                        try { if (document.getElementById('mySidebar') && document.getElementById('mySidebar').style.display === 'block') w3_close(); } catch(e) {}
+                    }
+                }, false);
+            });
+        })();
 
-	<!-- Script menu mobile -->
-	<script>
-		// Ouvre/ferme le menu mobile
-		function w3_open() {
-			const x = document.getElementById('mySidebar');
-			if (x.style.display === 'block') {
-				x.style.display = 'none';
-			} else {
-				x.style.display = 'block';
-			}
-		}
-		function w3_close() {
-			const x = document.getElementById('mySidebar');
-			x.style.display = 'none';
-		}
-	</script>
+        // Slideshow JS
+        let slideIndex = 1;
+        let slideTimer; // timer pour l'auto-défilement
+
+        function showSlides(n) {
+            let i;
+            let slides = document.getElementsByClassName("mySlides");
+            let dots = document.getElementsByClassName("dot");
+            if (n > slides.length) {slideIndex = 1}
+            if (n < 1) {slideIndex = slides.length}
+            for (i = 0; i < slides.length; i++) {
+                slides[i].classList.remove("active");
+            }
+            for (i = 0; i < dots.length; i++) {
+                dots[i].className = dots[i].className.replace(" active", "");
+            }
+            slides[slideIndex-1].classList.add("active");
+            dots[slideIndex-1].className += " active";
+        }
+
+        function plusSlides(n) {
+            slideIndex += n;
+            showSlides(slideIndex);
+            resetSlideTimer();
+        }
+
+        function currentSlide(n) {
+            slideIndex = n;
+            showSlides(slideIndex);
+            resetSlideTimer();
+        }
+
+        function autoShowSlides() {
+            slideIndex++;
+            showSlides(slideIndex);
+            slideTimer = setTimeout(autoShowSlides, 2000);
+        }
+
+        function resetSlideTimer() {
+            clearTimeout(slideTimer);
+            slideTimer = setTimeout(autoShowSlides, 2000);
+        }
+
+        // Initialisation
+        showSlides(slideIndex);
+        slideTimer = setTimeout(autoShowSlides, 2000);
+    </script>
 </body>
 </html>
