@@ -104,6 +104,7 @@ footer {
   color: #fff;
 }
 
+/* redundant box-sizing kept (do not remove per request) */
 * {box-sizing:border-box}
 
 /* Slideshow container */
