@@ -4,13 +4,23 @@
     <title>Modèle CSS</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="AF.css">
-    <!-- Remplacer Raleway par Open Sans -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,700&display=swap">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <style>
-        /* Utiliser Open Sans partout */
-        body,h1,h2,h3,h4,h5,h6 {font-family: "Open Sans", sans-serif}
+    <!-- Preload / préconnect pour accélérer le rendu -->
+    <link rel="preload" href="AF.css" as="style" onload="this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="AF.css"></noscript>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link rel="preload" href="https://fonts.googleapis.com/css?family=Montserrat:400,600,700&display=swap" as="style" onload="this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,600,700&display=swap"></noscript>
+
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" as="style" onload="this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"></noscript>
+
+    <!-- Longue feuille de styles inline : différée pour réduire le blocage initial -->
+    <style id="deferred-styles" media="print">
+        /* Utiliser Montserrat partout */
+        body,h1,h2,h3,h4,h5,h6 {font-family: "Montserrat", sans-serif}
         body, html { height: 100%; line-height: 1.8; }
         .bgimg-1 {
             background-position: center;
@@ -22,9 +32,17 @@
         /* Slideshow bandes latérales */
         .slideshow-container {
             position: relative;
-            margin: auto;
-            max-width: 900px;
-            min-height: 300px; /* pour éviter le collapse */
+            /* full-bleed sur toute la largeur du viewport */
+            width: 100vw;
+            max-width: none;
+            /* recentrer la boîte full-bleed dans son parent */
+            margin-left: calc(50% - 50vw);
+            margin-right: 0;
+            height: 794px;      /* hauteur desktop élargie (~+10% vs origine) */
+            overflow: hidden;   /* s'assurer que le contenu est clipé */
+            border-radius: 0;       /* full-bleed, pas d'arrondi externe */
+            box-sizing: border-box;
+
         }
         .slide-nav-left, .slide-nav-right {
             position: absolute;
@@ -36,7 +54,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: rgba(0,0,0,0.08);
+            background: rgba(255, 255, 255, 0.1);
             transition: background 0.0s;
             user-select: none;
         }
@@ -78,11 +96,16 @@
             box-shadow: 0 2px 12px rgba(0,0,0,0.15);
             /* Ajout pour rendre le lien cliquable sur toute la zone */
             cursor: pointer;
+            display: flex;
+            align-items: center;    /* centre verticalement le contenu */
+            justify-content: center;/* centre horizontalement le contenu */
         }
         .slideshow-container .text a {
             color: inherit;
             text-decoration: none;
-            display: block;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             width: 100%;
             height: 100%;
         }
@@ -108,16 +131,459 @@
             pointer-events: auto;
             position: relative;
         }
+
+        /* Styles pour la carte Google Maps sous la section CONTACT */
+        /* NOTE: on renforce ici la hauteur minimale du conteneur afin que l'iframe ne s'effondre
+           lorsque le layout devient empilé (fenêtré / mobile). */
+        .map-container {
+            display:block;
+            width: 100%;
+            max-width: 900px;
+            margin: 12px auto 0;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+            /* garantir une hauteur utilisable sur desktop / fenêtré */
+            min-height: 320px;
+            /* height:auto pour permettre au flex d'étirer si nécessaire */
+            height: auto;
+            box-sizing: border-box;
+        }
+        .map-container iframe {
+            display: block;
+            width: 100%;
+            height: 100%;       /* remplit la hauteur du conteneur */
+            min-height: 320px;  /* sécurité si parent ne force pas la hauteur */
+            border: 0;
+        }
+
+        .map-row {
+            display: flex;
+            gap: 16px;
+            align-items: stretch;
+            justify-content: center;
+            flex-wrap: wrap;
+            flex-direction: row;
+            max-width: 900px;
+            margin: 24px auto;
+            padding: 0 8px;
+        }
+
+        .map-row .map-container {
+            flex: 1 1 520px;
+            max-width: none;
+            margin: 0;
+            display: flex;           /* permet à l'iframe de remplir verticalement */
+            border-radius: 8px;
+            overflow: hidden;
+            /* s'assurer qu'en mode multi-colonnes la carte aura une hauteur correcte */
+            min-height: 320px;
+        }
+
+        .map-info {
+            flex: 0 1 300px;
+            min-width: 260px;
+            max-width: 340px;
+            background: #ffffff;
+            padding: 16px;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            color: #111;
+            line-height: 1.3;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+        .map-info h4 { margin: 0 0 8px; font-size: 1.05rem; }
+        .map-info p { margin: 6px 0; font-size: 0.98rem; }
+        .map-info .coords { font-family: monospace; font-weight:600; }
+        .map-info .map-cta {
+            margin-top: 12px;
+            display: flex;
+            justify-content: center;
+        }
+        .map-info .map-cta .af-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 220px;
+        }
+        /* iframe prend toute la hauteur du conteneur map-container */
+        .map-container iframe {
+            width: 100%;
+            height: 100%;
+            border: 0;
+            display: block;
+        }
+
+        @media (max-width: 900px) {
+            /* en mode étroit : empiler, réduire les hauteurs minimales */
+            .map-row { flex-direction: column; }
+            .map-info {
+                flex-basis: 100%;
+                width: 100%;
+                min-width: 0;
+                max-width: none;
+            }
+            .map-row .map-container { flex-basis: 100%; min-height: 220px; }
+            .map-row { align-items: stretch; margin: 16px auto; }
+            .map-container iframe { min-height: 220px; height: 100%; }
+        }
+
+        /* Nouvelle classe pour agrandir les titres de section */
+        .section-title {
+            font-size: 2.2rem;      /* plus grand sur desktop */
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            margin-bottom: 0.6em;
+            text-transform: uppercase;
+        }
+        @media (max-width: 900px) {
+            .section-title { font-size: 1.9rem; }
+        }
+        @media (max-width: 600px) {
+            .section-title { font-size: 1.5rem; }
+        }
+
+        /* Classe pour le titre héro 'Tout simplement.' (agrandi et responsive) */
+        .hero-title {
+            font-size: 3.2rem;
+            font-weight: 700;
+            line-height: 1.05;
+            letter-spacing: 0.01em;
+            text-transform: none; /* garder la casse d'origine */
+            display: inline-block;
+        }
+        @media (max-width: 900px) {
+            .hero-title { font-size: 2.6rem; }
+        }
+        @media (max-width: 600px) {
+            .hero-title { font-size: 1.8rem; }
+        }
+
+        /* Agrandir bouton ENVOYER : considérer icône+texte comme un seul bloc centré */
+        .contact-submit {
+            font-size: 1.2rem;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center; /* centre le bloc .contact-content */
+            padding: 12px 28px;
+            font-weight: 700;
+            margin: 0 auto;
+            min-width: 200px;
+            box-sizing: border-box;
+        }
+        /* le bloc qui contient icône + texte (considéré comme un seul élément) */
+        .contact-content {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;               /* espace entre icône et texte */
+            justify-content: center; /* centre l'icône+texte internement */
+        }
+        .contact-content .fa {
+            font-size: 1.25em;
+            line-height: 1;
+            display: inline-block;
+            width: 1.25em;           /* largeur fixe pour l'icône */
+            text-align: center;
+        }
+        @media (max-width: 600px) {
+            .contact-submit { padding: 10px 18px; font-size: 1.05rem; min-width: 180px; }
+            .contact-content .fa { font-size: 1.05em; width: 1.05em; }
+        }
+
+        /* Agrandir le "logo" texte dans la barre (site-simple.ch) */
+        .site-logo {
+            font-size: 1.15rem;
+            font-weight: 800;
+            padding-left: 18px;
+            padding-right: 18px;
+        }
+
+        /* Arrondir les cartes dans la section NOS SERVICES */
+        #pricing .af-ul.af-white.af-center.af-card {
+            border-radius: 12px;
+            overflow: hidden; /* évite que les éléments enfants débordent des coins arrondis */
+        }
+        /* Optionnel : arrondir légèrement les éléments li de tête si nécessaire */
+        #pricing .af-ul.af-white.af-center.af-card > li:first-child {
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+        }
+
+        /* --- AJOUT : augmenter l'effet d'ombre au survol pour les cartes de prix --- */
+        /* transition fluide pour box-shadow (et optionnellement transform) */
+        #pricing .af-ul.af-card {
+            transition: box-shadow 250ms cubic-bezier(.2,.8,.2,1), transform 250ms cubic-bezier(.2,.8,.2,1);
+            will-change: box-shadow, transform;
+        }
+        /* ombre augmentée et léger "lift" au survol */
+        #pricing .af-ul.af-card:hover {
+            box-shadow: 0 20px 48px rgba(0,0,0,0.22), 0 6px 20px rgba(0,0,0,0.12);
+            transform: translateY(-6px);
+        }
+
+        /* Slideshow: coins arrondis et images qui couvrent le conteneur */
+        .slideshow-container {
+            position: relative;
+            /* full-bleed sur toute la largeur du viewport */
+            width: 100vw;
+            max-width: none;
+            /* recentrer la boîte full-bleed dans son parent */
+            margin-left: calc(50% - 50vw);
+            margin-right: 0;
+            height: 794px;          /* hauteur desktop élargie (~+10% vs origine) */
+            border-radius: 0;       /* full-bleed, pas d'arrondi externe */
+            overflow: hidden;       /* clipper tout ce qui dépasse */
+            padding-bottom: 0;
+            margin-bottom: 0px;
+        }
+        .slideshow-container img,
+        .slideshow-container .mySlides img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* couvrir proprement le conteneur sans déformer */
+        }
+        @media (max-width: 600px) {
+            .slideshow-container { 
+                height: 582px;
+                padding-bottom: 38px;
+                margin-bottom: -38px;
+            }
+        }
+
+        /* --------------- AJOUT : espacement du formulaire CONTACT --------------- */
+        /* Desktop : laisser 50px de chaque côté */
+        @media (min-width: 601px) {
+            #contact form {
+                margin: 0 auto;
+                box-sizing: border-box;
+                width: 70%;
+                max-width: none;
+            }
+        }
+        /* Mobile : prendre la fenêtre complète */
+        @media (max-width: 600px) {
+            #contact form {
+                margin: 0;               /* plein écran sur smartphone */
+                box-sizing: border-box;
+                width: 100%;
+            }
+        }
+        /* S'assurer que les champs remplissent l'espace disponible */
+        #contact form .af-input,
+        #contact form textarea,
+        #contact form select {
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+		/* Ajout : marges 50px (desktop) et full-bleed sans bordure (smartphone) */
+		@media (min-width: 601px) {
+			/* Le slideshow prend la largeur du conteneur moins 100px (50px de chaque côté) */
+			.slideshow-container {
+				width: calc(100% - 100px);
+				max-width: none;
+				margin-left: 50px;
+				margin-right: 50px;
+				/* légèrement arrondi en desktop pour l'esthétique */
+				border-radius: 8px;
+				overflow: hidden;
+				box-sizing: border-box;
+                /* hauteur desktop élargie (~+10% vs origine) */
+                height: 794px;
+                padding-bottom: 0;
+                margin-bottom: 48px;
+			}
+			/* ajustement optionnel des zones de navigation latérales lorsque le conteneur n'est pas full-bleed */
+			.slide-nav-left, .slide-nav-right {
+				width: 10%;
+			}
+		}
+
+		@media (max-width: 600px) {
+			/* Sur smartphone : full-bleed — aucune marge, pas d'arrondi */
+			.slideshow-container {
+				width: 100vw;
+				max-width: none;
+				margin-left: calc(50% - 50vw);
+				margin-right: 0;
+				border-radius: 0;
+				overflow: hidden;
+                /* hauteur mobile élargie (~+10% vs origine) */
+                height: 582px;
+                margin-bottom: 24px;
+			}
+			.slide-nav-left, .slide-nav-right {
+				/* restaurer la largeur plus large sur mobile */
+				width: 28%;
+			}
+		}
+
+        /* Styles pour afficher prix original barré + prix réduit (mis à jour) */
+        .price-row {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 0;
+            min-height: 110px;
+            box-sizing: border-box;
+            padding: 8px 0 4px;
+        }
+        .price-stack {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            min-height: 86px;
+        }
+        .price-stack--discount {
+            transform: translateY(5%);
+        }
+        .original-price {
+            position: absolute;
+            top: 43%;
+            left: 50%;
+            transform: translate(-50%, -72%);
+            color: rgba(0,0,0,0.16);
+            text-decoration: line-through;
+            font-size: 2.5rem;
+            font-weight: 700;
+            z-index: 0;
+            pointer-events: none;
+            white-space: nowrap;
+            margin: 0;
+            transition: transform 200ms ease, top 200ms ease;
+        }
+        .discounted-price {
+            position: relative;
+            z-index: 1;
+            color: #111;
+            font-size: 2.3rem;
+            font-weight: 700;
+            margin: 0;
+            line-height: 1;
+        }
+        .price-note {
+            font-size: 0.95rem;
+            color: inherit;
+            z-index: 1;
+            margin-top: 12px;
+            margin-bottom: -6px;
+        }
+
+        @media (max-width: 600px) {
+            .price-row {
+                min-height: 80px;
+                padding: 6px 0 4px;
+            }
+            .price-stack {
+                min-height: 64px;
+            }
+            .price-stack .original-price {
+                font-size: 1.85rem;
+                top: 44%;
+                transform: translate(-50%, -76%);
+            }
+            .price-stack .discounted-price {
+                font-size: 1.65rem;
+            }
+        }
+
+        /* Equal-height cards in the pricing row (improved) */
+@media (min-width: 601px) {
+    /* mettre la rangée en flex pour aligner les colonnes */
+    #pricing .af-row-padding {
+        display: flex;
+        /* autoriser le passage à la ligne lorsque l'espace est insuffisant */
+        flex-wrap: wrap;
+        align-items: stretch; /* force les colonnes à la même hauteur */
+        gap: 16px;
+        justify-content: center;
+    }
+    /* chaque colonne devient un conteneur flex qui s'étire */
+    #pricing .af-row-padding .af-col {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        /* permettre au navigateur de réduire jusqu'à une largeur minimale raisonnable
+           puis forcer le wrapping si l'espace total n'est pas suffisant */
+        flex: 1 1 384px;
+        min-width: 384px;
+        max-width: 432px;
+        width: auto !important;
+    }
+    /* la carte prend toute la hauteur de la colonne */
+    #pricing .af-col .af-ul.af-card {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start; /* éviter les espaces entre items */
+            flex: 1 1 auto; /* IMPORTANT : permet d'\u00e9galiser la hauteur */
+            /* Hauteur fixe des cartes sur desktop (définie en pixels) */
+            height: 550px;
+        box-sizing: border-box;
+        width: 100%;
+    }
+    /* Pousser l'espace libre au-dessus du bloc prix pour que le prix et la bande grise restent adjacents */
+    #pricing .af-ul.af-card > li.price-li { margin-top: auto; }
+    /* S'assurer qu'aucun espace ne sépare la bande grise du bloc prix */
+    #pricing .af-ul.af-card > li.af-light-grey.af-padding-24 { margin-top: 0; }
+    /* s'assurer que le bloc de prix ne pousse pas la carte inutilement */
+    .price-row {
+        flex: 0 0 auto;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    /* garder le bouton collé en bas sans shrink
+       et AFFICHER la bande grise comme sur mobile */
+    #pricing .af-ul.af-card > li.af-light-grey.af-padding-24 {
+        flex-shrink: 0;
+    }
+}
+
+/* mobile : comportement empilé inchangé */
+@media (max-width: 600px) {
+    #pricing .af-row-padding { display: block; }
+    #pricing .af-row-padding .af-col { display: block; }
+    #pricing .af-col .af-ul.af-card { display: block; flex: none; }
+}
     </style>
+
+    <!-- Script léger pour activer les styles différés après le load (ou asap) -->
+    <script>
+        (function(){
+            function enableDeferredStyles(){
+                try {
+                    var s = document.getElementById('deferred-styles');
+                    if (s && s.media && s.media !== 'all') s.media = 'all';
+                } catch(e){}
+            }
+            // tenter d'appliquer rapidement sans bloquer : RAF + fallback timeout + load event
+            if (window.requestAnimationFrame) {
+                window.requestAnimationFrame(function(){
+                    setTimeout(enableDeferredStyles, 300);
+                });
+            } else {
+                window.addEventListener('load', enableDeferredStyles);
+                setTimeout(enableDeferredStyles, 1000);
+            }
+        })();
+    </script>
 </head>
 <body>
     <!-- Barre de navigation -->
     <div class="af-top">
         <div class="af-bar af-white af-card" id="myNavbar">
-            <a href="#home" class="af-bar-item af-button af-wide">site-simple.ch</a>
+            <a href="#home" class="af-bar-item af-button af-wide site-logo">/site-simple.ch</a>
             <div class="af-right af-hide-small">
-                <a href="#pricing" class="af-bar-item af-button"><i class="fa fa-usd"></i> SERVICES</a>
                 <a href="#work" class="af-bar-item af-button"><i class="fa fa-th"></i> PORTFOLIO</a>
+                <a href="#pricing" class="af-bar-item af-button"><i class="fa fa-usd"></i> SERVICES</a>
                 <a href="#contact" class="af-bar-item af-button"><i class="fa fa-envelope"></i> CONTACT</a>
             </div>
             <a href="javascript:void(0)" class="af-bar-item af-button af-right af-hide-large af-hide-medium" onclick="w3_open()">
@@ -131,17 +597,16 @@
         <a href="javascript:void(0)" onclick="w3_close()" class="af-bar-item af-button af-large af-padding-16">Fermer ×</a>
         <a href="#pricing" onclick="w3_close()" class="af-bar-item af-button">PRIX</a>
         <a href="#work" onclick="w3_close()" class="af-bar-item af-button">PORTFOLIO</a>
-        <a href="#team" onclick="w3_close()" class="af-bar-item af-button">ÉQUIPE</a>
         <a href="#contact" onclick="w3_close()" class="af-bar-item af-button">CONTACT</a>
     </nav>
 
     <!-- En-tête -->
     <header class="bgimg-1 af-display-container af-grayscale-min" id="home">
         <div class="af-display-left af-text-white" style="padding:48px">
-            <span class="af-jumbo af-hide-small">Tout simplement.</span><br>
-            <span class="af-xxlarge af-hide-large af-hide-medium">Commencez quelque chose qui compte</span><br>
+            <span class="af-jumbo af-hide-small hero-title">Tout simplement.</span><br>
+            <span class="af-xxlarge af-hide-large af-hide-medium hero-title">Tout simplement.</span><br>
             <span class="af-large">Fiable et efficace. Votre marketing digital à prix défiant toute concurrence.</span>
-            <p><a href="#pricing" class="af-button af-white af-padding-large af-large af-margin-top af-opacity af-hover-opacity-off">Découvrir notre offre</a></p>
+            <p><a href="#pricing" class="af-button af-white af-padding-large af-large af-margin-top af-opacity af-hover-opacity-off">Découvrir nos offres</a></p>
         </div>
         <div class="af-display-bottomright af-text-grey af-large" style="padding: 30px 48px">
             <i class="fa fa-facebook-official af-hover-opacity"></i>
@@ -152,12 +617,51 @@
             <i class="fa fa-linkedin af-hover-opacity"></i>
         </div>
     </header>
+    
+    <!-- 1) TRAVAUX -->
+    <div class="af-container" style="padding:24px 16px" id="work">
+        <h3 class="af-center section-title">NOS TRAVAUX</h3>
+        <p class="af-center af-large" style="margin-bottom:16px;">Quelques exemples de ce que nous accomplissons pour nos clients :</p>
+        <div style="margin-top:8px">
+            <!-- Slideshow NOS TRAVAUX -->
+            <div class="slideshow-container">
+                <div class="slide-nav-left" onclick="plusSlides(-1)">
+                    <span class="slide-arrow">&#10094;</span>
+                </div>
+                <div class="slide-nav-right" onclick="plusSlides(1)">
+                    <span class="slide-arrow">&#10095;</span>
+                </div>
 
-    <!-- 1) NOS SERVICES -->
-    <div class="af-container af-light-grey" style="padding:100px 16px" id="pricing">
-        <h3 class="af-center">NOS SERVICES</h3>
-        <p class="af-center af-large" style="margin-bottom:30px;">Choisissez l’offre clef-en-main qui vous convient le mieux :</p>
-        <div class="af-row-padding" style="margin-top:20px">
+<div class="mySlides fade" data-caption="Essayer le site" data-link="projet1.html" data-target="_blank">
+    <img src="images/slide1.jpg" style="width:100%">
+    <!-- removed inner .text -->
+    </div>
+    <div class="mySlides fade" data-caption="Essayer le site" data-link="projet2.html" data-target="_blank">
+        <img src="images/slide2.jpg" style="width:100%">
+        <!-- removed inner .text -->
+    </div>
+
+    <!-- Single caption element positioned relative to the slideshow container -->
+    <div class="text slide-caption" aria-hidden="false">
+        <a id="slide-link" href="#" target="_blank">Essayer le site</a>
+    </div>
+
+    </div>
+            </div>
+            <!-- Points indicateurs -->
+            <div style="text-align:center; margin-top:8px;">
+                <span class="dot" onclick="currentSlide(1)"></span>
+                <span class="dot" onclick="currentSlide(2)"></span>
+                <span class="dot" onclick="currentSlide(3)"></span>
+            </div>
+        </div>
+    </div>
+
+        <!-- 2) NOS SERVICES -->
+    <div class="af-container" style="padding:24px 16px" id="pricing">
+        <h3 class="af-center section-title">NOS SERVICES</h3>
+        <p class="af-center af-large" style="margin-bottom:16px;">Choisissez l’offre clef-en-main qui vous convient le mieux :</p>
+        <div class="af-row-padding" style="margin-top:8px">
             <!-- Carte Basique -->
             <div class="af-col l4 m6 af-margin-bottom">
                 <ul class="af-ul af-white af-center af-card af-hover-shadow">
@@ -165,9 +669,15 @@
                     <li class="af-padding-16">Site web <b>1 page</b></li>
                     <li class="af-padding-16">Design complet du site</li>
                     <li class="af-padding-16">Maintenance en ligne</li>
-                    <li class="af-padding-16">
-                        <h2>CHF 149</h2>
-                        <span class="af-opacity">Paiement annuel</span>
+                    <!-- Changed price block: show original 399 CHF (struck) and discounted 149 CHF -->
+                    <li class="af-padding-16 price-li">
+                        <div class="price-row" aria-label="Prix initial 399 francs, prix réduit 199 francs">
+                            <div class="price-stack price-stack--discount">
+                                <span class="original-price" aria-hidden="true">CHF 399</span>
+                                <h2 class="discounted-price">CHF 199</h2>
+                            </div>
+                            <span class="af-opacity price-note">Paiement annuel — Offre spéciale</span>
+                        </div>
                     </li>
                     <li class="af-light-grey af-padding-24">
                         <button type="button" class="af-button af-black af-padding-large af-wide" onclick="choosePlan('Basique')">Choisir</button>
@@ -181,9 +691,14 @@
                     <li class="af-padding-16">Site web <b>5 pages</b></li>
                     <li class="af-padding-16">Design et SEO de base</li>
                     <li class="af-padding-16">Support prioritaire</li>
-                    <li class="af-padding-16">
-                        <h2>CHF 299</h2>
-                        <span class="af-opacity">Paiement annuel</span>
+                    <li class="af-padding-16 price-li">
+                        <div class="price-row" aria-label="Prix initial 499 francs, prix réduit 299 francs">
+                            <div class="price-stack price-stack--discount">
+                                <span class="original-price" aria-hidden="true">CHF 499</span>
+                                <h2 class="discounted-price">CHF 299</h2>
+                            </div>
+                            <span class="af-opacity price-note">Paiement annuel — Offre spéciale</span>
+                        </div>
                     </li>
                     <li class="af-light-grey af-padding-24">
                         <button type="button" class="af-button af-black af-padding-large af-wide" onclick="choosePlan('Pro')">Choisir</button>
@@ -197,9 +712,13 @@
                     <li class="af-padding-16"><b>Fonctionnalités avancées</b></li>
                     <li class="af-padding-16">Intégrations</li>
                     <li class="af-padding-16">Support dédié</li>
-                    <li class="af-padding-16">
-                        <h2>Sur devis</h2>
-                        <span class="af-opacity">A définir</span>
+                    <li class="af-padding-16 price-li">
+                        <div class="price-row" aria-label="Sur devis">
+                            <div class="price-stack">
+                                <h2 class="discounted-price">Sur devis</h2>
+                            </div>
+                            <span class="af-opacity price-note">Contactez-nous</span>
+                        </div>
                     </li>
                     <li class="af-light-grey af-padding-24">
                         <button type="button" class="af-button af-black af-padding-large af-wide" onclick="choosePlan('Entreprise')">Nous contacter</button>
@@ -209,54 +728,41 @@
         </div>
     </div>
 
-    
-    <!-- 2) TRAVAUX -->
-    <div class="af-container" style="padding:100px 16px" id="work">
-        <h3 class="af-center">NOS TRAVAUX</h3>
-        <p class="af-center af-large" style="margin-bottom:30px;">Quelques exemples types de ce que nous accomplissons pour nos clients :</p>
-        <div style="margin-top:20px">
-            <!-- Slideshow NOS TRAVAUX -->
-            <div class="slideshow-container">
-                <div class="slide-nav-left" onclick="plusSlides(-1)">
-                    <span class="slide-arrow">&#10094;</span>
-                </div>
-                <div class="slide-nav-right" onclick="plusSlides(1)">
-                    <span class="slide-arrow">&#10095;</span>
-                </div>
-<div class="mySlides fade">
-    <img src="images/slide1.jpg" style="width:100%">
-    <div class="text">
-        <a href="projet1.html" target="_blank">Essayer le site</a>
-    </div>
-    </div>
-    <div class="mySlides fade">
-        <img src="images/slide2.jpg" style="width:100%">
-        <div class="text">
-            <a href="projet2.html" target="_blank">Essayer le site</a>
-        </div>
-    </div>
-
-    </div>
-            </div>
-            <!-- Points indicateurs -->
-            <br>
-            <div style="text-align:center">
-                <span class="dot" onclick="currentSlide(1)"></span>
-                <span class="dot" onclick="currentSlide(2)"></span>
-                <span class="dot" onclick="currentSlide(3)"></span>
-            </div>
-        </div>
-    </div>
 
     <!-- 3) CONTACT -->
-    <div class="af-container" style="padding:50px 16px" id="contact">
-        <h3 class="af-center">CONTACT</h3>
-        <p class="af-center af-large" style="margin-bottom:30px;">Pour d'avantages d'informations :</p>
-        <div style="margin-top:20px">
-            <p><i class="fa fa-map-marker fa-fw af-xxlarge af-margin-right"></i> site-simple.ch, Rue de Sébeillon 12, 1004 Lausanne</p>
-            <p><i class="fa fa-phone fa-fw af-xxlarge af-margin-right"></i> 079 718 78 65</p>
-            <p><i class="fa fa-envelope fa-fw af-xxlarge af-margin-right"></i> sitesimple@gmail.com</p>
-            <br>
+    <div class="af-container af-light-grey" style="padding:24px 16px" id="contact">
+        <h3 class="af-center section-title">CONTACT</h3>
+
+            <!-- Aperçu Google Map et panneau coordonnées -->
+            <div class="map-row" aria-label="Carte et coordonnées - site-simple">
+                <div class="map-container" aria-hidden="false">
+                    <iframe
+                        id="gmap"
+                        title="Localisation - site-simple (satellite)"
+                        src="https://www.google.com/maps?q=Rue+de+S%C3%A9beillon+12+1004+Lausanne&t=k&z=17&output=embed"
+                        allowfullscreen
+                        loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade"></iframe>
+                </div>
+                <div class="map-info" aria-label="Coordonnées de l'emplacement">
+
+                <h4 style="margin-top:8px;"><i class="fa fa-phone" aria-hidden="true"></i><b> Téléphone</b></h4>
+                <p><a href="tel:+41797187865" style="color:inherit; text-decoration:none;">079 718 78 65</a></p>
+
+                <h4 style="margin-top:12px;"><i class="fa fa-envelope" aria-hidden="true"></i><b> E‑mail</b></h4>
+                <p><a href="mailto:site-simple@gmail.com" style="color:inherit; text-decoration:none;">site-simple@gmail.com</a></p>
+
+                <h4 style="margin-top:12px;"><i class="fa fa-map-marker" aria-hidden="true"></i><b> Adresse</b></h4>
+                <p>site-simple.ch<br>Rue de Sébeillon 12<br>1004 Lausanne</p>
+
+                    <p class="map-cta">
+                        <a class="af-button af-light-grey" href="https://www.google.com/maps?q=Rue+de+S%C3%A9beillon+12+1004+Lausanne&t=k&z=17" target="_blank" rel="noopener">
+                            <i class="fa fa-map-marker af-margin-right"></i> Ouvrir dans Google Maps
+                        </a>
+                    </p>
+                </div>
+            </div>
+
             <form action="/action_page.php" target="_blank">
                 <p><input id="contact-email" class="af-input af-border" type="email" placeholder="Email" required name="Email"></p>
                 <p><input id="contact-nom" class="af-input af-border" type="text" placeholder="Nom" required name="Nom"></p>
@@ -266,17 +772,24 @@
                     <select id="contact-subject" class="af-input af-border" required name="Sujet">
                         <option value="" disabled selected>Sujet</option>
                         <option value="Demande">Demande</option>
-                        <option value="Basique">Inscription Basique</option>
-                        <option value="Pro">Inscription Pro</option>
-                        <option value="Entreprise">Inscription Entreprise</option>
+                        <option value="Basique">Pack "Basique"</option>
+                        <option value="Pro">Pack "Pro"</option>
+                        <option value="Entreprise">Pack "Entreprise"</option>
                     </select>
-                </p>                                <p><textarea id="contact-message" class="af-input af-border" placeholder="Message" required name="Message" rows="5" style="resize: vertical; width:100%;"></textarea></p>
-                <p class="af-center" style="margin-top:48px">
-                    <button class="af-button af-black" type="submit">
-                        <i class="fa fa-paper-plane"></i> ENVOYER
+                </p>                                
+                <p><textarea id="contact-message" class="af-input af-border" placeholder="Votre demande..." required name="Message" rows="5" style="resize: vertical; width:100%;"></textarea></p>
+                <p class="af-center" style="margin-top:16px">
+                    <button class="af-button af-black contact-submit" type="submit" aria-label="Envoyer le message">
+                        <span class="contact-content">
+                            <i class="fa fa-paper-plane" aria-hidden="true"></i>
+                            <span>ENVOYER</span>
+                        </span>
                     </button>
                 </p>
             </form>
+
+
+
         </div>
     </div>
 
@@ -422,6 +935,22 @@
             }
             slides[slideIndex-1].classList.add("active");
             dots[slideIndex-1].className += " active";
+
+            // Update centralized caption (centered relative to .slideshow-container)
+            try {
+                const activeSlide = slides[slideIndex-1];
+                const captionText = activeSlide ? (activeSlide.getAttribute('data-caption') || '') : '';
+                const captionLink = activeSlide ? (activeSlide.getAttribute('data-link') || '#') : '#';
+                const captionTarget = activeSlide ? (activeSlide.getAttribute('data-target') || '_blank') : '_blank';
+                const linkEl = document.getElementById('slide-link');
+                if (linkEl) {
+                    linkEl.textContent = captionText;
+                    linkEl.href = captionLink;
+                    linkEl.target = captionTarget;
+                }
+            } catch (e) {
+                // ignore caption update errors
+            }
         }
 
         function plusSlides(n) {
